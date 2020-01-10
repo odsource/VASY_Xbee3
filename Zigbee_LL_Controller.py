@@ -3,14 +3,18 @@
 # from digi.xbee.models.mode import APIOutputModeBit
 # from digi.xbee.util import utils
 #
+# data = ""
+#
 # ########### Local XBee ############
 # # Control bridge 0x0840
 # device = ZigBeeDevice("COM21", 115200)
 #
-# data = ""
-#
 # switch_endpoint = 0x02
+#
+# # Control bridge
 # device_switch_controller_id = 0x0840
+# switch_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
+#                      "On/Off": 0x03, "Level control": 0x04, "Color control": 0x05}
 #
 # ########### Remote ############
 # remote_xbee = ZigBeeDevice("COM20", 115200)
@@ -19,13 +23,16 @@
 #
 # # On/Off light 0x0000
 # device_light_id = 0x0000
-# light_cluster_id = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
+# light_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02, "On/Off": 0x03}
+# light_commands = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
 #
 # # Dimmable light 0x0100
 # device_dim_id = 0x0100
-# dim_cluster_id = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
-#                   "Stop": 0x03, "Move to Level(with On/Off)": 0x04,
-#                   "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
+# dim_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
+#                   "On/Off": 0x03, "Level control": 0x04}
+# dim_commands = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
+#                 "Stop": 0x03, "Move to Level(with On/Off)": 0x04,
+#                 "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
 #
 # device.open()
 #
@@ -46,12 +53,12 @@
 # while(True):
 #     key_input = input()
 #     if (key_input == 'on'):
-#         data = ""
+#         data = light_commands["On"]
 #         device.send_expl_data(remote_xbee_device=remote_xbee, data=data, src_endpoint=switch_endpoint,
 #                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["On"],
 #                               profile_id=device_light_id)
 #     elif (key_input == "off"):
-#         data = ""
+#         data = light_commands["Off"]
 #         device.send_expl_data(remote_xbee_device=remote_xbee, data=data, src_endpoint=switch_endpoint,
 #                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["Off"],
 #                               profile_id=device_light_id)
