@@ -72,7 +72,7 @@
 #     elif (key_input.isdecimal()):
 #         data = key_input
 #         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
-#                               dest_endpoint=light_endpoint, cluster_id=dim_cluster_id["Move to Level(with On/Off)"],
+#                               dest_endpoint=light_endpoint, cluster_id=dim_cluster_id["Move (with On/Off)"],
 #                               profile_id=device_dim_id)
 #     elif (key_input == "exit"):
 #         break
