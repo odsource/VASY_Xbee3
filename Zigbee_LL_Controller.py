@@ -17,7 +17,7 @@
 #                      "On/Off": 0x03, "Level control": 0x04, "Color control": 0x05}
 #
 # ########### Remote ############
-# remote_xbee = ZigBeeDevice("COM20", 115200)
+# REMOTE_NODE_ID = "REMOTE"
 #
 # light_endpoint = 0x11
 #
@@ -50,21 +50,28 @@
 # # 0x00 = Up (increase light level)
 # # 0x01 = Down (decrease light level)
 #
+# # Obtain the remote XBee device from the XBee network.
+# xbee_network = device.get_network()
+# remote_device = xbee_network.discover_device(REMOTE_NODE_ID)
+# if remote_device is None:
+#     print("Could not find the remote device")
+#     exit(1)
+#
 # while(True):
 #     key_input = input()
 #     if (key_input == 'on'):
 #         data = light_commands["On"]
-#         device.send_expl_data(remote_xbee_device=remote_xbee, data=data, src_endpoint=switch_endpoint,
+#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
 #                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["On"],
 #                               profile_id=device_light_id)
 #     elif (key_input == "off"):
 #         data = light_commands["Off"]
-#         device.send_expl_data(remote_xbee_device=remote_xbee, data=data, src_endpoint=switch_endpoint,
+#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
 #                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["Off"],
 #                               profile_id=device_light_id)
 #     elif (key_input.isdecimal()):
 #         data = key_input
-#         device.send_expl_data(remote_xbee_device=remote_xbee, data=data, src_endpoint=switch_endpoint,
+#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
 #                               dest_endpoint=light_endpoint, cluster_id=dim_cluster_id["Move to Level(with On/Off)"],
 #                               profile_id=device_dim_id)
 #     elif (key_input == "exit"):
