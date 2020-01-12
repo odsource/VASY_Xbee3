@@ -9,7 +9,7 @@
 # # Control bridge 0x0840
 # device = ZigBeeDevice("COM21", 115200)
 #
-# switch_endpoint = 0x02
+# switch_endpoint = 0x11
 #
 # # Control bridge
 # device_switch_controller_id = 0x0840
