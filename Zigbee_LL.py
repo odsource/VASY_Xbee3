@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from machine import Pin
+from machine import Pin, PWM
 import time
 import xbee
 
@@ -42,6 +42,8 @@ def dim(rec_endpoint, cluster_id, rec_payload):
     print("Dim")
     if rec_endpoint == endpoint:
         print("Right endpoint")
+        if cluster_id == 0x04:
+            pwm_pin.freq(rec_payload)
 
 
 def light(rec_endpoint, cluster_id, rec_payload):
@@ -59,6 +61,7 @@ print(" +--------------------------------------+\n")
 # Set up the LED pin object to manage the LED status. Configure the pin
 # as output and set its initial value to off (0).
 led_pin = Pin(LED_PIN_ID, Pin.OUT, value=0)
+pwm_pin = PWM(LED_PIN_ID)
 
 # Start blinking the LED by toggling its value every second.
 while True:
