@@ -1,11 +1,56 @@
+# Copyright (c) 2019, Digi International, Inc.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from machine import Pin
 import time
 import xbee
 
-# Pin D9 (ON/SLEEP/DIO9)
 LED_PIN_ID = "D4"
 
-payload = "0";
+endpoint = 0x11
+
+light_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02, "On/Off": 0x03}
+light_commands = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
+
+payload = ""
+
+dim_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
+                  "On/Off": 0x03, "Level control": 0x04}
+dim_commands = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
+                "Stop": 0x03, "Move to Level(with On/Off)": 0x04,
+                "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
+
+
+def dim(rec_endpoint, cluster_id, rec_payload):
+    print("Dim")
+    if rec_endpoint == endpoint:
+        print("Right endpoint")
+
+
+def light(rec_endpoint, cluster_id, rec_payload):
+    if rec_endpoint == endpoint:
+        print("Right endpoint")
+        led_pin.value(cluster_id)
+
+
+device_func = {0x0000: light, 0x0100: dim}
 
 print(" +--------------------------------------+")
 print(" | XBee MicroPython Blinking LED Sample |")
@@ -20,16 +65,8 @@ while True:
     # Check if the XBee has any message in the queue.
     received_msg = xbee.receive()
     if received_msg:
-        # Get the sender's 64-bit address and payload from the received message.
-        payload = received_msg['payload']
-        print(int(payload))
-        # payload = payload.decode()
+        f = device_func[received_msg['profile']]
+        f(received_msg['endpoint'], received_msg['cluster'], received_msg['payload'])
 
-    print("- LED OFF")
-    led_pin.value(0)
-    time.sleep_ms(int(payload))
 
-    print("- LED ON")
-    led_pin.value(1)
-    time.sleep_ms(int(payload))
 
