@@ -24,15 +24,15 @@
 # # On/Off light 0x0000
 # device_light_id = 0x0000
 # light_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02, "On/Off": 0x03}
-# light_commands = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
+# light_commands = {"Off": b'00000000', "On": b'00000001', "Toggle": b'00000010'}
 #
 # # Dimmable light 0x0100
 # device_dim_id = 0x0100
 # dim_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
 #                   "On/Off": 0x03, "Level control": 0x04}
-# dim_commands = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
-#                 "Stop": 0x03, "Move to Level(with On/Off)": 0x04,
-#                 "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
+# dim_commands = {"Move to Level": b'00000000', "Move": b'00000001', "Step": b'00000010',
+#                 "Stop": b'00000011', "Move to Level(with On/Off)": b'00000100',
+#                 "Move (with On/Off": b'00000101', "Step (with On/Off)": b'00000110'}
 #
 # device.open()
 #
@@ -51,30 +51,37 @@
 # # 0x01 = Down (decrease light level)
 #
 # # Obtain the remote XBee device from the XBee network.
+#
 # xbee_network = device.get_network()
 # remote_device = xbee_network.discover_device(REMOTE_NODE_ID)
+# print(remote_device)
+# print("Start")
 # if remote_device is None:
 #     print("Could not find the remote device")
 #     exit(1)
 #
-# while(True):
+# while True:
 #     key_input = input()
-#     if (key_input == 'on'):
+#     if key_input == 'on':
+#         print("Set light on")
 #         data = light_commands["On"]
-#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
-#                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["On"],
-#                               profile_id=device_light_id)
-#     elif (key_input == "off"):
+#         device.send_expl_data(remote_xbee_device=remote_device, data=light_commands["On"],
+#                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
+#                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
+#     elif key_input == "off":
+#         print("Set light off")
 #         data = light_commands["Off"]
-#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
-#                               dest_endpoint=light_endpoint, cluster_id=light_cluster_id["Off"],
-#                               profile_id=device_light_id)
-#     elif (key_input.isdecimal()):
+#         device.send_expl_data(remote_xbee_device=remote_device, data=light_commands["Off"],
+#                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
+#                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
+#     elif key_input.isdecimal():
+#         print("Dim light to")
+#         print(key_input)
 #         data = key_input
-#         device.send_expl_data(remote_xbee_device=remote_device, data=data, src_endpoint=switch_endpoint,
-#                               dest_endpoint=light_endpoint, cluster_id=dim_cluster_id["Move to Level (with On/Off)"],
-#                               profile_id=device_dim_id)
-#     elif (key_input == "exit"):
+#         device.send_expl_data(remote_xbee_device=remote_device, data=dim_commands["Move to Level(with On/Off)"],
+#                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
+#                               cluster_id=dim_cluster_id["Level control"], profile_id=device_dim_id)
+#     elif key_input == "exit":
 #         break
 #
 #

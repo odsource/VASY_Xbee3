@@ -23,6 +23,7 @@ import time
 import xbee
 
 LED_PIN_ID = "D4"
+PWM_PIN_ID = "P0"
 
 endpoint = 0x11
 
@@ -38,18 +39,21 @@ dim_commands = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
                 "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
 
 
-def dim(rec_endpoint, cluster_id, rec_payload):
+def dim(dest_endpoint, cluster_id, rec_payload):
     print("Dim")
-    if rec_endpoint == endpoint:
+    if dest_endpoint == endpoint:
         print("Right endpoint")
         if cluster_id == 0x04:
-            pwm_pin.freq(rec_payload)
+            print("dim it")
+            pwm_pin.duty(rec_payload)
 
 
-def light(rec_endpoint, cluster_id, rec_payload):
-    if rec_endpoint == endpoint:
+def light(dest_endpoint, cluster_id, rec_payload):
+    if dest_endpoint == endpoint:
         print("Right endpoint")
-        led_pin.value(cluster_id)
+        print(rec_payload)
+        if cluster_id == light_cluster_id["On/Off"]:
+            led_pin.value(rec_payload)
 
 
 device_func = {0x0000: light, 0x0100: dim}
@@ -61,15 +65,18 @@ print(" +--------------------------------------+\n")
 # Set up the LED pin object to manage the LED status. Configure the pin
 # as output and set its initial value to off (0).
 led_pin = Pin(LED_PIN_ID, Pin.OUT, value=0)
-pwm_pin = PWM(LED_PIN_ID)
+pwm_pin = PWM(PWM_PIN_ID)
 
-# Start blinking the LED by toggling its value every second.
+x = xbee.discover()
+print(pwm_pin.freq())
 while True:
     # Check if the XBee has any message in the queue.
     received_msg = xbee.receive()
     if received_msg:
-        f = device_func[received_msg['profile']]
-        f(received_msg['endpoint'], received_msg['cluster'], received_msg['payload'])
+        print("Message received")
+        if received_msg['source_ep'] == 0x11:
+            f = device_func[received_msg['profile']]
+            f(received_msg['dest_ep'], received_msg['cluster'], int(received_msg['payload']))
 
 
 
