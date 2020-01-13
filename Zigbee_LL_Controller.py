@@ -64,13 +64,13 @@ while True:
     key_input = input()
     if key_input == 'on':
         print("Set light on")
-        data = light_commands["On"] + " " + "1"
+        data = light_commands["On"] + " " + "0"
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
     elif key_input == "off":
         print("Set light off")
-        data = light_commands["Off"] + " " + "0"
+        data = light_commands["Off"] + " " + "1"
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)

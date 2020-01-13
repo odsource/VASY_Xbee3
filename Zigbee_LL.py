@@ -66,7 +66,7 @@ print(" +--------------------------------------+\n")
 
 # Set up the LED pin object to manage the LED status. Configure the pin
 # as output and set its initial value to off (0).
-led_pin = Pin(LED_PIN_ID, Pin.OUT, value=0)
+led_pin = Pin(LED_PIN_ID, Pin.OUT, value=1)
 pwm_pin = PWM(PWM_PIN_ID)
 
 x = xbee.discover()
