@@ -39,16 +39,18 @@ dim_commands = {"Move to Level": 0x00, "Move": 0x01, "Step": 0x02,
                 "Move (with On/Off": 0x05, "Step (with On/Off)": 0x06}
 
 
-def dim(dest_endpoint, cluster_id, rec_payload):
+def dim(dest_endpoint, cluster_id, rec_command, rec_payload):
     print("Dim")
     if dest_endpoint == endpoint:
         print("Right endpoint")
-        if cluster_id == 0x04:
+        if cluster_id == dim_cluster_id["Level control"]:
             print("dim it")
-            pwm_pin.duty(rec_payload)
+            if rec_command == dim_commands["Move to Level(with On/Off)"]:
+                print(rec_payload)
+                pwm_pin.duty(rec_payload)
 
 
-def light(dest_endpoint, cluster_id, rec_payload):
+def light(dest_endpoint, cluster_id, rec_command, rec_payload):
     if dest_endpoint == endpoint:
         print("Right endpoint")
         print(rec_payload)
@@ -76,7 +78,6 @@ while True:
         print("Message received")
         if received_msg['source_ep'] == 0x11:
             f = device_func[received_msg['profile']]
-            f(received_msg['dest_ep'], received_msg['cluster'], int(received_msg['payload']))
-
-
-
+            payload = received_msg['payload']
+            payload = payload.split()
+            f(received_msg['dest_ep'], received_msg['cluster'], int(payload[0]), int(payload[1]))
