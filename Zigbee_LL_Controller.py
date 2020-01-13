@@ -61,6 +61,7 @@ if remote_device is None:
     exit(1)
 
 while True:
+    print("For dimming type in value between 0 and 1023: ")
     key_input = input()
     if key_input == 'on':
         print("Set light on")

@@ -69,8 +69,6 @@ print(" +--------------------------------------+\n")
 led_pin = Pin(LED_PIN_ID, Pin.OUT, value=1)
 pwm_pin = PWM(PWM_PIN_ID)
 
-x = xbee.discover()
-print(pwm_pin.freq())
 while True:
     # Check if the XBee has any message in the queue.
     received_msg = xbee.receive()
