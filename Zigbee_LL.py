@@ -32,7 +32,7 @@ light_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02, "On/Off": 
 light_commands = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
 
 payload = ""
-transition = 0
+transition_time = 0
 
 dim_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
                   "On/Off": 0x03, "Level control": 0x04}
@@ -51,7 +51,12 @@ def dim(dest_endpoint, cluster_id, rec_command, rec_payload):
                 actual_level = pwm_pin.duty()
                 level = rec_payload
                 transition_level = level - actual_level
-                step = (transition / transition_level)*1000
+                if transition_level == 0:
+                    level = rec_payload
+                else:
+                    step = (transition_time / transition_level)*1000
+                print("Transition time")
+                print(transition_time)
                 print("actual_level")
                 print(actual_level)
                 print("level")
@@ -60,18 +65,17 @@ def dim(dest_endpoint, cluster_id, rec_command, rec_payload):
                 print(transition_level)
                 print("step")
                 print(step)
-                print("Frequency")
 
-                if transition == 0:
+                if transition_time == 0:
                     pwm_pin.duty(rec_payload)
                 else:
                     print("Dim steps")
                     while True:
                         if pwm_pin.duty() == level:
                             break
-                        next_step = pwm_pin.duty() + int(step)
-                        if next_step > 1023:
-                            next_step = 1023
+                        next_step = pwm_pin.duty() + transition_time * int(step)
+                        if next_step > 1000:
+                            next_step = 1000
                         pwm_pin.duty(next_step)
                         time.sleep_ms(1)
 
@@ -107,9 +111,9 @@ while True:
             f = device_func[received_msg['profile']]
             payload = received_msg['payload']
             payload = payload.split()
-            transition = 0
+            transition_time = 0
             print(len(payload))
             if len(payload) == 3:
-                transition = int(payload[2])
-                print(transition)
+                transition_time = int(payload[2])
+                print(transition_time)
             f(received_msg['dest_ep'], received_msg['cluster'], int(payload[0]), int(payload[1]))
