@@ -61,7 +61,7 @@ if remote_device is None:
     exit(1)
 
 while True:
-    print("For dimming type in value between 0 and 1023: ")
+    print("For dimming type in value between 0 and 1023 and a second value for the time in s: ")
     key_input = input()
     if key_input == 'on':
         print("Set light on")
@@ -75,6 +75,12 @@ while True:
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
+    elif key_input == "toggle":
+        print("Toggle light")
+        data = light_commands["Toggle"] + " " + "1"
+        device.send_expl_data(remote_xbee_device=remote_device, data=data,
+                              src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
+                              cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
     elif key_input.isdecimal():
         print("Dim light to")
         print(key_input)
@@ -84,6 +90,8 @@ while True:
                               cluster_id=dim_cluster_id["Level control"], profile_id=device_dim_id)
     elif key_input == "exit":
         break
+
+    print("")
 
 
 device.close()
