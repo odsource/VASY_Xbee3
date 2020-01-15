@@ -31,6 +31,7 @@ light_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02, "On/Off": 
 light_commands = {"Off": 0x00, "On": 0x01, "Toggle": 0x02}
 
 payload = ""
+transition = 0
 
 dim_cluster_id = {"Identify": 0x00, "Groups": 0x01, "Scenes": 0x02,
                   "On/Off": 0x03, "Level control": 0x04}
@@ -55,7 +56,10 @@ def light(dest_endpoint, cluster_id, rec_command, rec_payload):
         print("Right endpoint")
         print(rec_payload)
         if cluster_id == light_cluster_id["On/Off"]:
-            led_pin.value(rec_payload)
+            if rec_command == light_commands["Off"] or rec_command == light_commands["On"]:
+                led_pin.value(rec_payload)
+            else:
+                led_pin.toggle()
 
 
 device_func = {0x0000: light, 0x0100: dim}
@@ -78,4 +82,6 @@ while True:
             f = device_func[received_msg['profile']]
             payload = received_msg['payload']
             payload = payload.split()
+            if len(payload) == 3:
+                transition = payload[2]
             f(received_msg['dest_ep'], received_msg['cluster'], int(payload[0]), int(payload[1]))
