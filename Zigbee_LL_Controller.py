@@ -61,30 +61,34 @@ if remote_device is None:
     exit(1)
 
 while True:
-    print("For dimming type in value between 0 and 1023 and a second value for the time in s: ")
+    print("For dimming, type in value between 0 and 1000 and a second value for the time in s: ")
     key_input = input()
-    if key_input == 'on':
+    if key_input.isdecimal():
+        key_input = key_input + " " + "0"
+    key_input = key_input.split(' ')
+    if key_input[0] == 'on':
         print("Set light on")
         data = light_commands["On"] + " " + "0"
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
-    elif key_input == "off":
+    elif key_input[0] == "off":
         print("Set light off")
         data = light_commands["Off"] + " " + "1"
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
-    elif key_input == "toggle":
+    elif key_input[0] == "toggle":
         print("Toggle light")
         data = light_commands["Toggle"] + " " + "1"
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=light_cluster_id["On/Off"], profile_id=device_light_id)
-    elif key_input.isdecimal():
+    elif key_input[0].isdecimal() and key_input[1].isdecimal():
         print("Dim light to")
         print(key_input)
-        data = dim_commands["Move to Level(with On/Off)"] + " " + key_input
+        data = dim_commands["Move to Level(with On/Off)"] + " " + key_input[0] + ' ' + key_input[1]
+        print(data)
         device.send_expl_data(remote_xbee_device=remote_device, data=data,
                               src_endpoint=switch_endpoint, dest_endpoint=light_endpoint,
                               cluster_id=dim_cluster_id["Level control"], profile_id=device_dim_id)

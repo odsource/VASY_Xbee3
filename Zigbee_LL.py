@@ -21,6 +21,7 @@
 from machine import Pin, PWM
 import time
 import xbee
+import machine
 
 LED_PIN_ID = "D4"
 PWM_PIN_ID = "P0"
@@ -47,8 +48,32 @@ def dim(dest_endpoint, cluster_id, rec_command, rec_payload):
         if cluster_id == dim_cluster_id["Level control"]:
             print("dim it")
             if rec_command == dim_commands["Move to Level(with On/Off)"]:
-                print(rec_payload)
-                pwm_pin.duty(rec_payload)
+                actual_level = pwm_pin.duty()
+                level = rec_payload
+                transition_level = level - actual_level
+                step = (transition / transition_level)*1000
+                print("actual_level")
+                print(actual_level)
+                print("level")
+                print(level)
+                print("transition_level")
+                print(transition_level)
+                print("step")
+                print(step)
+                print("Frequency")
+
+                if transition == 0:
+                    pwm_pin.duty(rec_payload)
+                else:
+                    print("Dim steps")
+                    while True:
+                        if pwm_pin.duty() == level:
+                            break
+                        next_step = pwm_pin.duty() + int(step)
+                        if next_step > 1023:
+                            next_step = 1023
+                        pwm_pin.duty(next_step)
+                        time.sleep_ms(1)
 
 
 def light(dest_endpoint, cluster_id, rec_command, rec_payload):
@@ -82,6 +107,9 @@ while True:
             f = device_func[received_msg['profile']]
             payload = received_msg['payload']
             payload = payload.split()
+            transition = 0
+            print(len(payload))
             if len(payload) == 3:
-                transition = payload[2]
+                transition = int(payload[2])
+                print(transition)
             f(received_msg['dest_ep'], received_msg['cluster'], int(payload[0]), int(payload[1]))
