@@ -73,11 +73,11 @@ def dim(dest_endpoint, cluster_id, rec_command, rec_payload):
                     while True:
                         if pwm_pin.duty() == level:
                             break
-                        next_step = pwm_pin.duty() + transition_time * int(step)
-                        if next_step > 1000:
-                            next_step = 1000
+                        next_step = pwm_pin.duty() + 1  # int(step)
+                        # if next_step > 1000:
+                        #     next_step = 1000
                         pwm_pin.duty(next_step)
-                        time.sleep_ms(1)
+                        time.sleep_ms(int(step))
 
 
 def light(dest_endpoint, cluster_id, rec_command, rec_payload):
